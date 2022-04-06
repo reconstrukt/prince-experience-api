@@ -22,7 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'v1'], function () {
   
-  Route::post('/spotify/login', [SpotifyController::class, 'login']);
+  Route::get('/spotify/login', [SpotifyController::class, 'login']);
+  Route::get('/spotify/callback', [SpotifyController::class, 'callback']);
   Route::get('/spotify/token', [SpotifyController::class, 'token']);
 
 });
