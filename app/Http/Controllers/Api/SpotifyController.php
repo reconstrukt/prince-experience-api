@@ -22,6 +22,7 @@ class SpotifyController extends BaseController {
     // return $this->ok('login not implemented');
     
     $client_state = $request->input('state');
+    $show_dialog = $request->input('show_dialog') == 'true' ? 'true' : 'false';
     
     $scope = "streaming,user-read-email,user-read-private";
     $state = uniqid() . self::SEPERATOR . $client_state;
@@ -30,7 +31,8 @@ class SpotifyController extends BaseController {
       'client_id' => config('spotify.spotify_client_id'),
       'scope' => $scope,
       'redirect_uri' => url('/api/v1/spotify/callback'),
-      'state' => $state
+      'state' => $state,
+      'show_dialog' => $show_dialog,
     ];
     
     $url = 'https://accounts.spotify.com/authorize/?' . http_build_query( $params );
