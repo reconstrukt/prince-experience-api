@@ -47,7 +47,7 @@ class SpotifyController extends BaseController {
     $code = $request->input('code') ?? null;
     $state = $request->input('state') ?? null;
     if ( ! $code || ! $state ) {
-      return $this->sendError('spotify error: callback code or state not found');
+      return $this->sendError('spotify error: callback code and/or state not found');
     }
     
     $payload = [
@@ -102,13 +102,50 @@ class SpotifyController extends BaseController {
   
   public function token(Request $request) {
     
-    $client_state = $request->input('state');
-    $token = null;
+    $refresh_token = $request->input('refresh_token') ?? null;
+    $state = $request->input('state') ?? null;
+    if ( ! $refresh_token || ! $state ) {
+      return $this->sendError('spotify error: refresh token and/or state not found');
+    }
     
-    return $this->sendResponse( [
-      'client_state' => $client_state,
-      'token' => $token,
-    ] );
+    $payload = [
+      'refresh_token' => $refresh_token,
+      'grant_type' => 'refresh_token'
+    ];
+
+    try {
+
+      $response = Http::withBasicAuth(config('spotify.spotify_client_id'), config('spotify.spotify_client_secret'))
+        ->asForm()
+        ->post( 'https://accounts.spotify.com/api/token', $payload );
+        
+    } catch ( \Throwable $e ) {
+      return $this->sendError( 'spotify token request error: ' . $e->getMessage() );
+    }
+    
+    $json = $response->body();
+    $json = json_decode( $json );
+    
+    $error = $json->error ?? null;
+    if ( $error ) {
+      return $this->sendError( 'spotify error: ' . ($json->error_description ?? 'unknown error') );
+    }
+    
+    // cache the access -and- refresh tokens for the given client state 
+    
+    $access_token = $json->access_token ?? null;
+    if ( ! $access_token ) {
+      return $this->sendError('spotify error: access token not found');
+    }
+    
+    $json = (array) $json;
+    $json['debug'] = [
+      'client_state' => $state,
+      'access_token' => $access_token,
+      'refresh_token' => $refresh_token,
+    ];
+    
+    return $this->sendResponse( $json );
   }
   
 }
