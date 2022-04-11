@@ -17,8 +17,16 @@ class HomeController extends Controller {
   
   public function index(Request $request) {
     
-    $state = $request->input('state') ?? date('YmdHis') . '-' . uniqid();
-    $url = url('/api/v1/spotify/login') . '?show_dialog=true&state=' . $state;
+    $params = [
+      'show_dialog' => 'true',
+    ];
+    
+    $state = $request->input('client_state') ?? false;
+    if ( $state ) {
+      $params['client_state'] = $request->input('client_state');
+    }
+    
+    $url = url('/api/v1/spotify/login') . '?' . http_build_query( $params );
     
     try {
       $response = Http::get($url);
