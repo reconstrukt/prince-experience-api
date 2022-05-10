@@ -90,7 +90,7 @@ class SpotifyController extends BaseController {
     }
     
     $client_state = explode(self::SEPERATOR, $state);
-    $client_state = $client_state[1];
+    $client_state = $client_state[1] ?? uniqid();
     
     if ( $client_state != '' ) {
       DB::table('spotify_tokens')->where('client_state', $client_state)->delete();
