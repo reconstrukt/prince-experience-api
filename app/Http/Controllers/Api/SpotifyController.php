@@ -49,8 +49,8 @@ class SpotifyController extends BaseController {
     // return $this->ok('callback not implemented');
     
     $code = $request->input('code') ?? null;
-    $state = $request->input('state') ?? null;
-    if ( ! $code || ! $state ) {
+    $state = $request->input('state') ?? uniqid();
+    if ( ! $code ) {
       return $this->sendError('spotify error: callback code and/or state not found');
     }
     
