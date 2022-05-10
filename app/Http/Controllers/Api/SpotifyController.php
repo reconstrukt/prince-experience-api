@@ -33,7 +33,7 @@ class SpotifyController extends BaseController {
       'client_id' => config('spotify.spotify_client_id'),
       'scope' => $scope,
       'redirect_uri' => url('/api/v1/spotify/callback'),
-      //'state' => $state,
+      'state' => $state,
       'show_dialog' => $show_dialog,
     ];
     
@@ -49,8 +49,8 @@ class SpotifyController extends BaseController {
     // return $this->ok('callback not implemented');
     
     $code = $request->input('code') ?? null;
-    $state = $request->input('state') ?? uniqid();
-    if ( ! $code ) {
+    $state = $request->input('state') ?? null;
+    if ( ! $code || ! $state ) {
       return $this->sendError('spotify error: callback code and/or state not found');
     }
     
@@ -90,7 +90,7 @@ class SpotifyController extends BaseController {
     }
     
     $client_state = explode(self::SEPERATOR, $state);
-    $client_state = $client_state[1] ?? uniqid();
+    $client_state = $client_state[1];
     
     if ( $client_state != '' ) {
       DB::table('spotify_tokens')->where('client_state', $client_state)->delete();
