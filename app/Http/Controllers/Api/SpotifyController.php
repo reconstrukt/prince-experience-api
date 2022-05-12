@@ -109,8 +109,7 @@ class SpotifyController extends BaseController {
       $url = 'https://prince-experience-ui.reconstrukt.net/settings?' . http_build_query([
         'client_state' => $client_state
       ]);
-      redirect( $url );
-      return;
+      return redirect( $url );
     }
     
     $json = (array) $json;
