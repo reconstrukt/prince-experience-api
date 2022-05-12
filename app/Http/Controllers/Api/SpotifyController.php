@@ -104,8 +104,13 @@ class SpotifyController extends BaseController {
         'created_at' => Carbon::now(self::PRINCE_TIMEZONE)->format('Y-m-d H:i:s'),
         'updated_at' => Carbon::now(self::PRINCE_TIMEZONE)->format('Y-m-d H:i:s')
       ]);
-      // TODO 
-      // redirect to front-end, with ?client_state=xx
+      
+      // redirect to front-end, with ?client_state=xx      
+      $url = 'https://prince-experience-ui.reconstrukt.net/settings?' . http_build_query([
+        'client_state' => $client_state
+      ]);
+      redirect( $url );
+      return;
     }
     
     $json = (array) $json;
