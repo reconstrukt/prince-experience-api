@@ -199,6 +199,15 @@ class SpotifyController extends BaseController {
       'refresh_token' => $refresh_token,
     ];
     
+    $userdata = 'no data';
+    try {      
+      $response = Http::withToken( $access_token )
+        ->get( 'https://api.spotify.com/v1/me' );        
+      $userdata = $response->body();      
+    } catch ( \Throwable $e ) {
+      // silently fail
+    }
+    
     // update or insert DB where client_state = xx
     if ( $has_token && $client_state != '' ) {
       
@@ -206,6 +215,7 @@ class SpotifyController extends BaseController {
         ->where('client_state', $client_state)
         ->update([
           'access_token' => $access_token,
+          'userdata' => $userdata,
           'expires_at' => Carbon::now(self::PRINCE_TIMEZONE)->addSeconds( $json->expires_in ?? 3600 )->format('Y-m-d H:i:s'),          
           'updated_at' => Carbon::now(self::PRINCE_TIMEZONE)->format('Y-m-d H:i:s'),
         ]);
