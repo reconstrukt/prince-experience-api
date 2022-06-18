@@ -65,7 +65,31 @@ class ExportPlaylists extends Command
         $persona = $row['persona uri'] ?? null;
         $track = $row['track'] ?? null;
         $album = $row['album'] ?? null;
-        $filename = $row['filename'] ?? null;
+        
+        if ( $track == '' ) {
+          // empty line in sheet 
+          continue;
+        }
+        
+        // $filename = $row['filename'] ?? null;
+        
+        $filename = $row['link'] ?? null;
+        $filename = parse_url( $filename, PHP_URL_PATH ); 
+        $filename = pathinfo( $filename, PATHINFO_BASENAME );
+        $filename = urldecode( $filename );
+        $filename = str_replace( ' ', '_', $filename );
+        $filename = str_replace( ['.wav','.aiff'], '.mp3', $filename );
+        
+        if ( $filename == '' ) {
+          $this->info( 'missing track for: ' . $track );
+          continue;
+        }
+        
+        $path = storage_path( 'tracks/' . $filename );
+        if ( ! file_exists( $path ) ) {
+          $this->info( 'file not found: ' . $filename );
+          continue;
+        }
         
         if ( $persona && $track && $album ) {
           if ( ! isset( $json[ $persona ] ) ) {
@@ -85,7 +109,7 @@ class ExportPlaylists extends Command
       $contents = json_encode( $json, JSON_PRETTY_PRINT );
       $path = Storage::put('playlists.json', $contents);
       
-      print_r( $json );
+      //print_r( $json );
       
       $this->info( 'parsed ' . $tot . ' tracks into ' . $pls . ' playlists' );
       $this->info( 'file exported to: ' . storage_path( 'playlists.json' ) );
