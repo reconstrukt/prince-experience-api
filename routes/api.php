@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\SpotifyController;
+use App\Http\Controllers\Api\WaitwhileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,5 +28,7 @@ Route::group(['prefix' => 'v1'], function () {
   Route::get('/spotify/login', [SpotifyController::class, 'login']);
   Route::get('/spotify/callback', [SpotifyController::class, 'callback']);
   Route::get('/spotify/token', [SpotifyController::class, 'token']);
+  
+  Route::post('/waitwhile/contest', [WaitwhileController::class, 'contest']);
 
 });
