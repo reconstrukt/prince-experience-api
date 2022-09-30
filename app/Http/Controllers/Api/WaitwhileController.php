@@ -19,6 +19,16 @@ class WaitwhileController extends BaseController {
   
   public function contest(Request $request) {
     
+    $validator = Validator::make($request->all(), [
+      'first_name' => 'required',
+      'last_name' => 'required',
+      'phone' => 'required',
+      'email' => 'required|email',
+    ]);
+    if ($validator->fails()) {
+			return $this->sendError($validator->errors(), 400);
+		}    
+    
     $customer = [
       'name' => $request->input('first_name') . ' ' . $request->input('last_name'),
       'firstName' => $request->input('first_name'),
