@@ -46,7 +46,6 @@ class WaitwhileController extends BaseController {
     ];
     
     // create customer 
-    /*
     $headers = [
       'apikey' => config('services.waitwhile.apikey'),
       'Accept' => 'application/json',
@@ -72,11 +71,10 @@ class WaitwhileController extends BaseController {
     
     $json = $response->body();
     $note = json_decode( $json );
-    */
     
     return $this->sendResponse([
-      'customer' => [], //$customer,
-      'note' => [], //$note,
+      'customer' => $customer,
+      'note' => $note,
     ]);
   }
   
